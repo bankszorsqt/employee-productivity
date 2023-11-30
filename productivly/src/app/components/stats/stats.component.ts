@@ -1,12 +1,12 @@
-import { Component } from '@angular/core';
+import {Component} from "@angular/core";
+import {MatCardModule} from "@angular/material/card";
 
 @Component({
-  selector: 'app-stats',
+  selector: "app-stats",
   standalone: true,
-  imports: [],
-  templateUrl: './stats.component.html',
-  styleUrl: './stats.component.scss'
+  imports: [MatCardModule],
+  templateUrl: "./stats.component.html",
+  styleUrl: "./stats.component.scss",
 })
 export class StatsComponent {
-
 }
