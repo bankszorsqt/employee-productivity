@@ -1,4 +1,4 @@
-<app-stats></app-stats>
-<router-outlet></router-outlet>
-test 2\
-
+<div class="flex-col flex">
+  <app-stats [totalEmployees]="totalEmployees" [totalClockedInTime]="'0'" [totalOvertimePaidAmount]="overtimePaidAmount" [totalRegularPaidAmount]="paidAmount" class="mt-80"></app-stats>
+  <app-employees-list [employees]="employees" class="mt-20"></app-employees-list>
+</div>

@@ -1,0 +1,17 @@
+@import "../../../styles/variables.scss";
+
+.card {
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 60px;
+  text-align: center;
+  margin-right: 20px;
+  width: 100%;
+  .card-title {
+    font-size: $card-title-size;
+    font-weight: 500;
+  }
+  .card-value {
+    margin-top: 15px;
+  }
+}

@@ -1,3 +1,6 @@
-<mat-card>
-  <mat-card-content>Simple card</mat-card-content>
-</mat-card>
+<div class="flex flex-grow">
+  <app-stat-card class="w-full" [title]="'Total Employees'" [value]="totalEmployees"></app-stat-card>
+  <app-stat-card class="w-full" [title]="'Clocked In Time'" [value]="(totalClockedInTime ? (totalClockedInTime | date: 'h') : '-')"></app-stat-card>
+  <app-stat-card class="w-full" [title]="'Regular Paid Amount'" [value]="totalRegularPaidAmount | currency:'$'"></app-stat-card>
+  <app-stat-card class="w-full" [title]="'Overtime Paid Amount'" [value]="totalOvertimePaidAmount | currency:'$'"></app-stat-card>
+</div>
