@@ -1,5 +1,3 @@
-import { Shift } from "./shift.model";
-
 export interface Employee {
   id: string;
   name: string;
@@ -8,4 +6,8 @@ export interface Employee {
   hourlyRateOvertime: number;
 }
 
-export type EmployeeClockIn = Employee & Pick<Shift, "clockIn">;
+export interface EmployeePayment extends Employee {
+  clockedIn: number;
+  regularPay: number;
+  overtimePay: number;
+}

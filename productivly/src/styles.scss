@@ -1,5 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 @import "styles/variables.scss";
+
 html,
 body {
   height: 100%;
@@ -10,8 +11,14 @@ body {
   background: $background;
 }
 
-.mat-mdc-table {
+table {
   width: 100%;
-  max-height: 500px;
-  overflow: auto;
+  box-shadow: $shadow;
+}
+
+.row-hover {
+  cursor: pointer;
+  &:hover {
+    background-color: $background;
+  }
 }

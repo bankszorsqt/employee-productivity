@@ -1,5 +1,10 @@
 app-stat-card {
-  &:not(:first-child, :last-child) {
-    margin: 0 30px;
+  margin-right: 30px;
+
+  &:first-child {
+    margin-left: 0;
+  }
+  &:last-child {
+    margin-right: 0;
   }
 }

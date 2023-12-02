@@ -1,2 +1,16 @@
-$background: rgba(0,0,0,0.01);
-$card-title-size: 40px;
+$background: #f7f7ff;
+$card-title-size: 32px;
+$shadow: 0 0 50px rgba(0, 0, 0, 0.08);
+
+// dirty override of checkbox colors
+:root {
+  --mat-accent: red;
+  --mat-primary: red;
+  --mdc-checkbox-selected-focus-icon-color: #3f51b5;
+  --mdc-checkbox-selected-hover-icon-color: #3f51b5;
+  --mdc-checkbox-selected-icon-color: #3f51b5;
+  --mdc-checkbox-selected-pressed-icon-color: #3f51b5;
+  --mdc-checkbox-selected-focus-state-layer-color: #3f51b5;
+  --mdc-checkbox-selected-hover-state-layer-color: #3f51b5;
+  --mdc-checkbox-selected-pressed-state-layer-color: #3f51b5;
+}

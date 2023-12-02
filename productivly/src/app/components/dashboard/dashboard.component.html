@@ -1,4 +1,19 @@
-<div class="flex-col flex">
-  <app-stats [totalEmployees]="totalEmployees" [totalClockedInTime]="'0'" [totalOvertimePaidAmount]="overtimePaidAmount" [totalRegularPaidAmount]="paidAmount" class="mt-80"></app-stats>
-  <app-employees-list [employees]="employees" class="mt-20"></app-employees-list>
+<div class="flex-col flex " >
+  <img class="mt-40 mb-40"
+    width="152" priority="true"
+    height="32"
+    ngSrc="https://assets-global.website-files.com/620e4b3d823b714310fa6d5d/62fa18b88ff443465a9796cf_insightful-logo-primary%20(1).svg"
+  />
+  <app-stats
+    [totalEmployees]="totalEmployees"
+    [totalClockedInTime]="totalClockedInTime"
+    [totalOvertimePaidAmount]="overtimePaidAmount"
+    [totalRegularPaidAmount]="paidAmount"
+  ></app-stats>
+  <app-employees-list
+    [totalSize]="totalEmployees"
+    (pageIndexChange)="getEmployeesPaginated($event)"
+    [loading]="loadingEmployees"
+    [employeePayments]="employeePayments"
+  ></app-employees-list>
 </div>
