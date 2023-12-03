@@ -9,7 +9,7 @@ export interface Employee {
 }
 
 export interface EmployeePayment extends Employee {
-  clockedIn: number;
+  clockedInTotal: number;
   regularPay: number;
   overtimePay: number;
   shifts?: Shift[];

@@ -18,7 +18,7 @@ export class ShiftService {
   getShiftsByEmployeeAndStartDate(startDate: number, employeeId: string): Observable<{ dates: Set<string>; shifts: Shift[] }> {
     const filterDate = new Date(startDate).toDateString();
     return this.http.get(`${API_URL}?_sort=start&_order=asc`).pipe(
-      //@ts-expect-error x is not defined
+      //@ts-expect-error type inference
       map((shifts: Shift[]) => {
         const getUniqueDatesForClockIn = (shifts: Shift[]) => {
           const uniqueEmployeeClockInDates = new Set<string>();

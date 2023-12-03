@@ -57,12 +57,12 @@ export class EmployeesListComponent implements OnChanges, OnInit, OnDestroy {
   @Output() selectEmployee = new EventEmitter<EmployeePayment[]>();
 
   selection = new SelectionModel<EmployeePayment>(true, []);
-  displayedColumns: string[] = ["id", "name", "email", "clockedIn", "regularPay", "overtimePay"];
+  displayedColumns: string[] = ["id", "name", "email", "clockedInTotal", "regularPay", "overtimePay"];
   columns: { name: string; value: string }[] = [
     { name: "Id", value: "id" },
     { name: "Name", value: "name" },
     { name: "Email", value: "email" },
-    { name: "Clocked In (h)", value: "clockedIn" },
+    { name: "Clocked In (h)", value: "clockedInTotal" },
     { name: "Regular ($)", value: "regularPay" },
     { name: "Overtime ($)", value: "overtimePay" },
   ];

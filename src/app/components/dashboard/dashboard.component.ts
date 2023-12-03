@@ -6,7 +6,7 @@ import { EmployeeService } from "../../services/employee.service";
 import { Employee, EmployeePayment, TableOptions } from "../../models/employee.model";
 import { combineLatest, first } from "rxjs";
 import { Shift } from "../../models/shift.model";
-import { NgOptimizedImage } from "@angular/common";
+import { KeyValue, NgOptimizedImage } from "@angular/common";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTooltipModule } from "@angular/material/tooltip";
@@ -81,7 +81,7 @@ export class DashboardComponent implements OnInit {
       .subscribe(([allEmployees, shifts]) => {
         this.totalEmployees = allEmployees.length;
         this.shifts = shifts;
-        this.allEmployeePayments = this.calculateTotalPay(allEmployees);
+        this.allEmployeePayments = this.calculateTotalPay(allEmployees, shifts);
         this.getEmployeesPaginated(this.defaultTableOptions);
         this.calculateAllStats(this.allEmployeePayments);
       });
@@ -94,16 +94,19 @@ export class DashboardComponent implements OnInit {
     employeePayments.forEach((employee: EmployeePayment) => {
       this.paidAmount += employee.regularPay;
       this.overtimePaidAmount += employee.overtimePay;
-      this.totalClockedInTime += employee.clockedIn;
+      this.totalClockedInTime += employee.clockedInTotal;
     });
     this.isLoadingStats = false;
   }
 
   getEmployeesPaginated(options: TableOptions): void {
-    this.employeeService.getEmployeesPaginated(options).pipe(first()).subscribe((employees) => {
-      this.isLoadingEmployees = false;
-      this.employeePayments = this.calculateTotalPay(employees);
-    });
+    this.employeeService
+      .getEmployeesPaginated(options)
+      .pipe(first())
+      .subscribe((employees) => {
+        this.isLoadingEmployees = false;
+        this.employeePayments = this.calculateTotalPay(employees, this.shifts);
+      });
   }
 
   calculateShiftDuration(clockIn: number, clockOut: number) {
@@ -114,7 +117,7 @@ export class DashboardComponent implements OnInit {
     return shiftDuration / (1000 * 60 * 60);
   }
 
-  calculatePayForShift(
+  calculatePayForDay(
     hoursWorked: number,
     employee: Employee
   ): {
@@ -139,30 +142,57 @@ export class DashboardComponent implements OnInit {
     overtimePay: number;
     totalEmployeeHours: number;
   } {
-    return shifts.reduce(
-      (payDetails: { regularPay: 0; overtimePay: 0; totalEmployeeHours: 0 }, shift: Shift) => {
-        if (shift.employeeId === employee.id) {
-          const shiftDuration = this.calculateShiftDuration(shift.clockIn, shift.clockOut);
-          const hoursWorked = this.calculateHoursWorked(shiftDuration);
-          const { regularPay, overtimePay, totalEmployeeHours } = this.calculatePayForShift(hoursWorked, employee);
+    const allShiftsPerEmployee = shifts.filter((shift) => shift.employeeId === employee.id);
 
-          payDetails.regularPay += regularPay;
-          payDetails.overtimePay += overtimePay;
-          payDetails.totalEmployeeHours += totalEmployeeHours;
-          return payDetails;
-        }
-        return payDetails;
-      },
-      { regularPay: 0, overtimePay: 0, totalEmployeeHours: 0 }
-    );
+    const employeeShiftsByDay: Record<string, { clockIn: Date; clockOut: Date }[]> = {};
+    allShiftsPerEmployee.forEach((shift) => {
+      // Convert timestamps to Date objects
+      const clockIn = new Date(shift.clockIn);
+      const clockOut = new Date(shift.clockOut);
+
+      // Get the date in "YYYY-MM-DD" format
+      const dateKey = clockIn.toISOString().split("T")[0];
+
+      // If the dateKey doesn't exist, initialize it
+      if (!employeeShiftsByDay[dateKey]) {
+        employeeShiftsByDay[dateKey] = [];
+      }
+      employeeShiftsByDay[dateKey].push({ clockIn, clockOut });
+    });
+
+    // Get how many hours per day employee worked
+    const hoursWorkedPerDay: Record<string, number> = {};
+    for (const [date, shifts] of Object.entries(employeeShiftsByDay)) {
+      let totalHours = 0;
+      // Calculate the total hours worked for the day
+      shifts.forEach((shift) => {
+        const duration = (shift.clockOut.getTime() - shift.clockIn.getTime()) / (1000 * 60 * 60); // in hours
+        totalHours += duration;
+      });
+      // Store total hours for the day
+      hoursWorkedPerDay[date] = totalHours;
+    }
+    const payDetails = {
+      regularPay: 0,
+      overtimePay: 0,
+      totalEmployeeHours: 0,
+    };
+    // Calculate pay for each day and aggregate it
+    for (const [, hours] of Object.entries(hoursWorkedPerDay)) {
+      const { regularPay, overtimePay, totalEmployeeHours } = this.calculatePayForDay(hours, employee);
+      payDetails.regularPay += regularPay;
+      payDetails.overtimePay += overtimePay;
+      payDetails.totalEmployeeHours += totalEmployeeHours;
+    }
+    return payDetails;
   }
 
-  calculateTotalPay(employees: Employee[]): EmployeePayment[] {
+  calculateTotalPay(employees: Employee[], shifts: Shift[]): EmployeePayment[] {
     return employees.map((employee) => {
-      const { regularPay, overtimePay, totalEmployeeHours } = this.calculateTotalPayForEmployee(employee, this.shifts);
+      const { regularPay, overtimePay, totalEmployeeHours } = this.calculateTotalPayForEmployee(employee, shifts);
       return {
         ...employee,
-        clockedIn: totalEmployeeHours,
+        clockedInTotal: totalEmployeeHours,
         regularPay,
         overtimePay,
       };
