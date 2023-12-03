@@ -8,7 +8,14 @@
 
 <mat-dialog-actions class="flex justify-between px-40-py-20">
   <button mat-button mat-dialog-close>Cancel</button>
-  <button mat-button mat-raised-button color="primary" (click)="saveEmployeesAndTheirShifts()" [mat-dialog-close]="true" cdkFocusInitial>
+  <button
+    mat-button
+    mat-raised-button
+    color="primary"
+    (click)="saveEmployeesAndTheirShifts()"
+    [disabled]="this.modifiedEmployees.length === 0 && modifiedShifts.length === 0"
+    [mat-dialog-close]="true"
+  >
     Save
   </button>
 </mat-dialog-actions>

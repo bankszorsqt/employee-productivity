@@ -30,6 +30,7 @@
       <td mat-cell *matCellDef="let shift">
         <mat-form-field class="w-fit-content">
           <input matInput type="text" [(ngModel)]="shift.clockIn" (change)="onShiftEdit(shift)" />
+          <mat-error *ngIf="errorMessage">{{ errorMessage }}</mat-error>
         </mat-form-field>
       </td>
     </ng-container>
@@ -38,6 +39,7 @@
       <td mat-cell *matCellDef="let shift">
         <mat-form-field class="w-fit-content">
           <input matInput type="text" [(ngModel)]="shift.clockOut" (change)="onShiftEdit(shift)" />
+          <mat-error *ngIf="errorMessage">{{ errorMessage }}</mat-error>
         </mat-form-field>
       </td>
     </ng-container>
@@ -45,7 +47,8 @@
       <th mat-header-cell *matHeaderCellDef>Total Time</th>
       <td mat-cell *matCellDef="let shift">
         <mat-form-field class="w-fit-content">
-          <input matInput type="text"  [(ngModel)]="shift.totalTime" (change)="onShiftEdit(shift)" />
+          <input matInput type="text" [(ngModel)]="shift.totalTime" (change)="onShiftEdit(shift)" />
+          <mat-error *ngIf="errorMessage">{{ errorMessage }}</mat-error>
         </mat-form-field>
       </td>
     </ng-container>
