@@ -1,11 +1,10 @@
-@import "../../../styles/variables";
+@import "../../../../styles/variables";
 
 .card {
   box-shadow: $shadow;
   padding: 60px 20px;
   text-align: center;
-
-
+  height: 190px;
   .card-title {
     font-size: $card-title-size;
     font-weight: 600;

@@ -1,0 +1,33 @@
+<div class="employee mb-20 bg-white">
+  <h3 class="employee--name">{{ index }}. {{ employee.name }}</h3>
+  <p class="employee--id">ID: {{ employee.id }}</p>
+  <form class="w-full flex justify-between" [formGroup]="employeeForm">
+    <div class="input-field name-field">
+      <mat-label>Name</mat-label>
+      <mat-form-field class="w-full">
+        <input matInput placeholder="Click to edit" formControlName="name" />
+        @if (employeeForm.controls.name.hasError("required")) {
+          <mat-error>This field is <strong>required</strong></mat-error>
+        }
+      </mat-form-field>
+    </div>
+    <div class="input-field rate-field">
+      <mat-label>Hourly Rate</mat-label>
+      <mat-form-field class="w-full">
+        <input type="number" matInput placeholder="Click to edit" formControlName="hourlyRate" />
+        @if (employeeForm.controls.hourlyRate.hasError("required")) {
+          <mat-error>This field is <strong>required</strong></mat-error>
+        }
+      </mat-form-field>
+    </div>
+    <div class="input-field overtime-field">
+      <mat-label>Overtime Hourly Rate</mat-label>
+      <mat-form-field class="w-full">
+        <input type="number" matInput placeholder="Click to edit" formControlName="hourlyRateOvertime" />
+        @if (employeeForm.controls.hourlyRateOvertime.hasError("required")) {
+          <mat-error>This field is <strong>required</strong></mat-error>
+        }
+      </mat-form-field>
+    </div>
+  </form>
+</div>

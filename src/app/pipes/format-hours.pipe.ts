@@ -6,11 +6,8 @@ import { Pipe, PipeTransform } from "@angular/core";
 })
 export class FormatHoursPipe implements PipeTransform {
   transform(hours: number): string {
-    const totalMinutes = hours * 60;
-    if (!totalMinutes) return `0`;
-    const minutes = (hours * 60) % 60;
-    const h = hours > 0 ? `${hours?.toFixed()}h` : "";
-    const m = minutes > 0 ? ` ${minutes?.toFixed()}m` : "";
-    return `${h} ${m}`;
+    const hoursString = Math.floor(hours).toString();
+    const minutesString = Math.floor((hours - Math.floor(hours)) * 60).toString();
+    return `${hoursString}h ${minutesString}m`;
   }
 }

@@ -1,3 +1,5 @@
+import { Shift } from "./shift.model";
+
 export interface Employee {
   id: string;
   name: string;
@@ -10,4 +12,11 @@ export interface EmployeePayment extends Employee {
   clockedIn: number;
   regularPay: number;
   overtimePay: number;
+  shifts?: Shift[];
+}
+
+export interface TableOptions {
+  pageIndex: number;
+  pageSize: number;
+  order: string;
 }

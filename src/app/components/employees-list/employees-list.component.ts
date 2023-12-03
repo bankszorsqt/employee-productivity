@@ -1,15 +1,28 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from "@angular/core";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatTableModule } from "@angular/material/table";
 import { SelectionModel } from "@angular/cdk/collections";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
-import { EmployeePayment } from "../../models/employee.model";
-import {CurrencyPipe, DecimalPipe, NgFor, NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault} from "@angular/common";
+import { EmployeePayment, TableOptions } from "../../models/employee.model";
+import { CurrencyPipe, DecimalPipe, NgFor, NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault } from "@angular/common";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatTooltipModule } from "@angular/material/tooltip";
-import { MatPaginator, MatPaginatorModule, PageEvent } from "@angular/material/paginator";
-import {FormatHoursPipe} from "../../pipes/format-hours.pipe";
+import { MatPaginatorModule, PageEvent } from "@angular/material/paginator";
+import { FormatHoursPipe } from "../../pipes/format-hours.pipe";
+import { MatSortModule, Sort } from "@angular/material/sort";
+import { SharedDataService } from "../../services/shared-data.service";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: "app-employees-list",
@@ -30,21 +43,19 @@ import {FormatHoursPipe} from "../../pipes/format-hours.pipe";
     NgSwitchDefault,
     DecimalPipe,
     FormatHoursPipe,
+    MatSortModule,
   ],
   templateUrl: "./employees-list.component.html",
   styleUrl: "./employees-list.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EmployeesListComponent implements OnChanges {
+export class EmployeesListComponent implements OnChanges, OnInit, OnDestroy {
   @Input() employeePayments: EmployeePayment[] = [];
-  @Input() loading!: boolean;
+  @Input() isLoading!: boolean;
   @Input() totalSize!: number;
-  @Output() pageIndexChange = new EventEmitter<number>();
+  @Output() pageIndexChange = new EventEmitter<TableOptions>();
+  @Output() selectEmployee = new EventEmitter<EmployeePayment[]>();
 
-  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator | undefined;
-
-  // TODO: add dynamic change and sorting
-  pageSize = 10;
   selection = new SelectionModel<EmployeePayment>(true, []);
   displayedColumns: string[] = ["id", "name", "email", "clockedIn", "regularPay", "overtimePay"];
   columns: { name: string; value: string }[] = [
@@ -55,6 +66,27 @@ export class EmployeesListComponent implements OnChanges {
     { name: "Regular ($)", value: "regularPay" },
     { name: "Overtime ($)", value: "overtimePay" },
   ];
+  paginationAndSearchConfig: TableOptions = { pageIndex: 0, pageSize: 10, order: "asc" };
+  sortDirection = "asc";
+  subs: Subscription = new Subscription();
+
+  constructor(private sharedDataService: SharedDataService) {}
+
+  ngOnInit() {
+    this.listenForDataRefresh();
+  }
+
+  listenForDataRefresh(): void {
+    this.subs.add(
+      this.sharedDataService.currentRefreshState.subscribe((refresh: boolean) => {
+        if (refresh) {
+          this.selection.clear();
+          this.selectEmployee.emit([]);
+          this.pageIndexChange.emit(this.paginationAndSearchConfig);
+        }
+      })
+    );
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["totalSize"]?.currentValue.length > 0 || changes["employeePayments"]?.currentValue.length > 0) {
@@ -62,32 +94,44 @@ export class EmployeesListComponent implements OnChanges {
     }
   }
 
-  /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected(): boolean {
     const numSelected = this.selection.selected.length;
-    const numRows = this.employeePayments.length;
-    return numSelected === numRows;
+    const numRows = this.employeePayments?.length;
+    return numSelected >= numRows;
   }
 
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
   toggleAllRows(): void {
     if (this.isAllSelected()) {
       this.selection.clear();
-      return;
+      this.selectEmployee.emit([]);
+    } else {
+      this.employeePayments?.forEach((row) => this.selection.select(row));
+      this.selection.select(...this.employeePayments);
     }
-
-    this.selection.select(...this.employeePayments);
+    this.selectEmployee.emit(this.selection.selected);
   }
 
-  /** The label for the checkbox on the passed row */
-  checkboxLabel(row?: EmployeePayment): string {
-    if (!row) {
-      return `${this.isAllSelected() ? "deselect" : "select"} all`;
-    }
-    return `${this.selection.isSelected(row) ? "deselect" : "select"} row ${row.id + 1}`;
+  onSelectRow(row: EmployeePayment): void {
+    this.selection.toggle(row);
+    this.selectEmployee.emit(this.selection.selected);
   }
 
-  onPageChange(event: PageEvent | { pageIndex: number }): void {
-    this.pageIndexChange.emit(event.pageIndex);
+  onPageChange({ pageIndex, pageSize }: PageEvent): void {
+    this.selection.clear();
+    this.selectEmployee.emit([]);
+    this.paginationAndSearchConfig = { pageIndex, pageSize, order: this.sortDirection };
+    this.pageIndexChange.emit(this.paginationAndSearchConfig);
+  }
+
+  sortName(sortState: Sort): void {
+    this.selection.clear();
+    this.selectEmployee.emit([]);
+    this.sortDirection = sortState.direction;
+    this.paginationAndSearchConfig.pageIndex = 0;
+    this.pageIndexChange.emit({ ...this.paginationAndSearchConfig, order: sortState.direction });
+  }
+
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
   }
 }

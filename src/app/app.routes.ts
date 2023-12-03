@@ -7,8 +7,4 @@ export const routes: Routes = [
     path: "dashboard",
     component: DashboardComponent,
   },
-  // {
-  //   path: "bulk-update",
-  //   loadChildren: () => import("./components/bulk-edit-employees/bulk-edit-employees.component").then((m) => m.BulkEditEmployeesComponent),
-  // },
 ];

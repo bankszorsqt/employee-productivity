@@ -1,0 +1,10 @@
+<mat-card class="card">
+  @if (isLoading) {
+    <div class="flex justify-center mt-20 mb-40">
+      <mat-spinner [diameter]="30" [strokeWidth]="4"></mat-spinner>
+    </div>
+  } @else {
+    <mat-card-title class="card-title">{{ value || "N/A" }}</mat-card-title>
+    <mat-card-subtitle class="card-value">{{ title || "-" }}</mat-card-subtitle>
+  }
+</mat-card>

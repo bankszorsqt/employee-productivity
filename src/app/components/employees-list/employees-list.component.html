@@ -1,86 +1,71 @@
 <div class="flex flex-col">
-  <div
-    [matTooltipPosition]="'above'"
-    [matTooltip]="!selection.selected.length ? 'Select employees to edit' : ''"
-    class="mt-40 mb-20 align-self-end"
-  >
-    <button [disabled]="selection.selected.length === 0" class="w-fit-content" color="primary" extended
-            mat-raised-button>
-      <mat-icon>edit</mat-icon>
-      ({{ selection.selected.length }}) Bulk Edit
-    </button>
-  </div>
-  @if (loading) {
-    <div class="flex justify-center w-full mt-120">
+  <ng-content></ng-content>
+  @if (isLoading && employeePayments.length === 0) {
+    <div class="flex justify-center w-full mt-120 relative">
       <mat-spinner diameter="80"></mat-spinner>
     </div>
   } @else {
-      <table [dataSource]="employeePayments" mat-table>
-        @for (column of columns;track column) {
-          <ng-container [ngSwitch]="column.value">
-            <ng-container *ngSwitchCase="'id'" matColumnDef="id">
-              <th *matHeaderCellDef mat-header-cell>
-                <mat-checkbox
-                  (change)="$event ? toggleAllRows() : null"
-                  [aria-label]="checkboxLabel()"
-                  [checked]="selection.hasValue() && isAllSelected()"
-                  [indeterminate]="selection.hasValue() && !isAllSelected()"
-                >
-                </mat-checkbox>
-              </th>
-              <td *matCellDef="let row" mat-cell>
-                <mat-checkbox
-                  (change)="$event ? selection.toggle(row) : null"
-                  (click)="$event.stopPropagation()"
-                  [aria-label]="checkboxLabel(row)"
-                  [checked]="selection.isSelected(row)"
-                >
-                </mat-checkbox>
-              </td>
-            </ng-container>
-            <ng-container *ngSwitchCase="'name'" [matColumnDef]="column.value">
-              <th mat-header-cell *matHeaderCellDef>
-                {{ column.name }}
-              </th>
-              <td mat-cell *matCellDef="let element">{{ element[column.value] || "-" }}</td>
-            </ng-container>
-            <ng-container *ngSwitchCase="'email'" [matColumnDef]="column.value">
-              <th mat-header-cell *matHeaderCellDef>
-                {{ column.name }}
-              </th>
-              <td mat-cell *matCellDef="let element">{{ element[column.value]}}</td>
-            </ng-container>
-            <ng-container *ngSwitchCase="'clockedIn'" [matColumnDef]="column.value">
-              <th mat-header-cell *matHeaderCellDef>
-                {{ column.name }}
-              </th>
-              <td mat-cell *matCellDef="let element">{{ (element[column.value] | formatHours)  || '-' }}</td>
-            </ng-container>
-            <ng-container *ngSwitchCase="'regularPay'" [matColumnDef]="column.value">
-              <th mat-header-cell *matHeaderCellDef>
-                {{ column.name }}
-              </th>
-              <td mat-cell *matCellDef="let element">{{ (element[column.value]  | currency:'$') || "-" }}</td>
-            </ng-container>
-            <ng-container *ngSwitchCase="'overtimePay'" [matColumnDef]="column.value">
-              <th mat-header-cell *matHeaderCellDef>
-                {{ column.name }}
-              </th>
-              <td mat-cell *matCellDef="let element">{{ (element[column.value]  | currency:'$') || "-" }}</td>
-            </ng-container>
-            <ng-container *ngSwitchDefault></ng-container>
+    <table [dataSource]="employeePayments" mat-table matSort matSortActive="name" (matSortChange)="sortName($event)" matSortDirection="asc">
+      @for (column of columns; track index; let index = $index) {
+        <ng-container [ngSwitch]="column.value">
+          <ng-container *ngSwitchCase="'id'" matColumnDef="id">
+            <th *matHeaderCellDef mat-header-cell>
+              <mat-checkbox
+                (change)="$event ? toggleAllRows() : null"
+                [checked]="selection.hasValue() && isAllSelected()"
+                [indeterminate]="selection.hasValue() && !isAllSelected()"
+              >
+              </mat-checkbox>
+            </th>
+            <td *matCellDef="let row" mat-cell>
+              <mat-checkbox
+                (change)="$event ? onSelectRow(row) : null"
+                (click)="$event.stopPropagation()"
+                [checked]="selection.isSelected(row)"
+              >
+              </mat-checkbox>
+            </td>
           </ng-container>
-        }
+          <ng-container *ngSwitchCase="'name'" [matColumnDef]="column.value">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear>
+              {{ column.name }}
+            </th>
+            <td mat-cell *matCellDef="let element">{{ element[column.value] || "-" }}</td>
+          </ng-container>
+          <ng-container *ngSwitchCase="'email'" [matColumnDef]="column.value">
+            <th mat-header-cell *matHeaderCellDef>
+              {{ column.name }}
+            </th>
+            <td mat-cell *matCellDef="let element">{{ element[column.value] }}</td>
+          </ng-container>
+          <ng-container *ngSwitchCase="'clockedIn'" [matColumnDef]="column.value">
+            <th mat-header-cell *matHeaderCellDef>
+              {{ column.name }}
+            </th>
+            <td mat-cell *matCellDef="let element">{{ (element[column.value] | formatHours) || "-" }}</td>
+          </ng-container>
+          <ng-container *ngSwitchCase="'regularPay'" [matColumnDef]="column.value">
+            <th mat-header-cell *matHeaderCellDef>
+              {{ column.name }}
+            </th>
+            <td mat-cell *matCellDef="let element">{{ (element[column.value] | currency: "$") || "-" }}</td>
+          </ng-container>
+          <ng-container *ngSwitchCase="'overtimePay'" [matColumnDef]="column.value">
+            <th mat-header-cell *matHeaderCellDef>
+              {{ column.name }}
+            </th>
+            <td mat-cell *matCellDef="let element">{{ (element[column.value] | currency: "$") || "-" }}</td>
+          </ng-container>
+          <ng-container *ngSwitchDefault></ng-container>
+        </ng-container>
+      }
 
-        <tr *matHeaderRowDef="displayedColumns; sticky: true" mat-header-row></tr>
-        <tr class="row-hover" (click)="selection.toggle(row)" *matRowDef="let row; columns: displayedColumns"
-            mat-row></tr>
-      </table>
-    <mat-paginator
-      [length]="totalSize"
-      [pageSize]="pageSize"
-      (page)="onPageChange($event)"
-      aria-label="Select page of GitHub search results"
-    ></mat-paginator>
+      <tr *matHeaderRowDef="displayedColumns; sticky: true" mat-header-row></tr>
+      <tr class="row-hover" (click)="onSelectRow(row)" *matRowDef="let row; columns: displayedColumns" mat-row></tr>
+    </table>
+    <mat-paginator class="mb-80" [length]="totalSize" [pageSizeOptions]="[10, 25, 50, 100]" (page)="onPageChange($event)"></mat-paginator>
+    <div *ngIf="isLoading" class="flex justify-center w-full mt-120 absolute-center">
+      <mat-spinner diameter="80"></mat-spinner>
+    </div>
   }
 </div>

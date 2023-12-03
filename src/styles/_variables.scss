@@ -1,6 +1,7 @@
-$background: #f7f7ff;
+$background-insightful: #f7f7ff;
 $card-title-size: 32px;
-$shadow: 0 0 50px rgba(0, 0, 0, 0.08);
+$shadow: 0 0 15px rgba(0, 0, 0, 0.08);
+$gray-text: rgba(0, 0, 0, 0.35);
 
 // dirty override of checkbox colors
 :root {

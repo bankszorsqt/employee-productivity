@@ -8,7 +8,11 @@ body {
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
-  background: $background;
+  background: $background-insightful;
+}
+
+div {
+  box-sizing: border-box;
 }
 
 table {
@@ -19,6 +23,29 @@ table {
 .row-hover {
   cursor: pointer;
   &:hover {
-    background-color: $background;
+    background-color: $background-insightful;
   }
+}
+
+// material overrides
+.mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix {
+  min-height: 40px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.shifts-table {
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none !important;
+  }
+  box-shadow: none;
+}
+
+.mat-mdc-form-field-has-icon-suffix .mat-mdc-text-field-wrapper {
+  height: 44px;
+}
+
+button.custom-date-class {
+  background: #c8d1ff !important;
+  border-radius: 100%;
 }

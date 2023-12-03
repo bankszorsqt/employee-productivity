@@ -1,0 +1,21 @@
+<div class="flex flex-grow">
+  <app-stat-card class="w-full" [isLoading]="isLoading" [title]="'Total Employees'" [value]="totalEmployees"></app-stat-card>
+  <app-stat-card
+    class="w-full"
+    [isLoading]="isLoading"
+    [title]="'Total Clocked Hours'"
+    [value]="totalClockedInTime | formatHours"
+  ></app-stat-card>
+  <app-stat-card
+    class="w-full"
+    [isLoading]="isLoading"
+    [title]="'Regular Paid Amount'"
+    [value]="totalRegularPaidAmount | currency: '$'"
+  ></app-stat-card>
+  <app-stat-card
+    class="w-full"
+    [isLoading]="isLoading"
+    [title]="'Overtime Paid Amount'"
+    [value]="totalOvertimePaidAmount | currency: '$'"
+  ></app-stat-card>
+</div>

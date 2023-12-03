@@ -1,17 +1,40 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, Injector, OnInit } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
-import { StatsComponent } from "../stats/stats.component";
+import { StatsComponent } from "../total-stats/stats/stats.component";
 import { EmployeesListComponent } from "../employees-list/employees-list.component";
 import { EmployeeService } from "../../services/employee.service";
-import { Employee, EmployeePayment } from "../../models/employee.model";
+import { Employee, EmployeePayment, TableOptions } from "../../models/employee.model";
 import { combineLatest, first } from "rxjs";
 import { Shift } from "../../models/shift.model";
-import {NgOptimizedImage} from "@angular/common";
+import { NgOptimizedImage } from "@angular/common";
+import { MatButtonModule } from "@angular/material/button";
+import { MatIconModule } from "@angular/material/icon";
+import { MatTooltipModule } from "@angular/material/tooltip";
+import { MatDialog } from "@angular/material/dialog";
+import { BulkEditEmployeesComponent } from "../bulk-edit/bulk-edit-employees/bulk-edit-employees.component";
+import { ShiftService } from "../../services/shift.service";
+import { MatDatepickerModule } from "@angular/material/datepicker";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
+import { MatNativeDateModule } from "@angular/material/core";
+import { SharedDataService } from "../../services/shared-data.service";
 
 @Component({
   selector: "app-dashboard",
   standalone: true,
-  imports: [RouterOutlet, StatsComponent, EmployeesListComponent, NgOptimizedImage],
+  imports: [
+    RouterOutlet,
+    StatsComponent,
+    EmployeesListComponent,
+    NgOptimizedImage,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatFormFieldModule,
+    MatInputModule,
+  ],
   templateUrl: "./dashboard.component.html",
   styleUrl: "./dashboard.component.scss",
 })
@@ -24,22 +47,42 @@ export class DashboardComponent implements OnInit {
   paidAmount = 0;
   overtimePaidAmount = 0;
   totalClockedInTime = 0;
-  loadingEmployees: boolean = true;
+  isLoadingEmployees = false;
+  isLoadingStats = false;
+  selectedEmployees: EmployeePayment[] = [];
+  defaultTableOptions = { pageIndex: 0, pageSize: 10, order: "asc" };
 
-  constructor(private employeeService: EmployeeService) {}
+  constructor(
+    private employeeService: EmployeeService,
+    private shiftsService: ShiftService,
+    private dialog: MatDialog,
+    private injector: Injector,
+    private sharedDataService: SharedDataService
+  ) {}
 
   ngOnInit(): void {
     this.getAllEmployeesAndShifts();
+    this.listenForDataRefresh();
+  }
+
+  listenForDataRefresh(): void {
+    this.sharedDataService.currentRefreshState.subscribe((refresh: boolean) => {
+      if (refresh) {
+        this.getAllEmployeesAndShifts();
+      }
+    });
   }
 
   getAllEmployeesAndShifts(): void {
-    combineLatest([this.employeeService.getEmployees(), this.employeeService.getShifts()])
+    this.isLoadingStats = true;
+    this.isLoadingEmployees = true;
+    combineLatest([this.employeeService.getEmployees(), this.shiftsService.getShifts()])
       .pipe(first())
       .subscribe(([allEmployees, shifts]) => {
         this.totalEmployees = allEmployees.length;
         this.shifts = shifts;
         this.allEmployeePayments = this.calculateTotalPay(allEmployees);
-        this.getEmployeesPaginated(0);
+        this.getEmployeesPaginated(this.defaultTableOptions);
         this.calculateAllStats(this.allEmployeePayments);
       });
   }
@@ -53,11 +96,12 @@ export class DashboardComponent implements OnInit {
       this.overtimePaidAmount += employee.overtimePay;
       this.totalClockedInTime += employee.clockedIn;
     });
+    this.isLoadingStats = false;
   }
 
-  getEmployeesPaginated(pageIndex: number): void {
-    this.employeeService.getEmployeesPaginated(pageIndex).subscribe((employees) => {
-      this.loadingEmployees = false;
+  getEmployeesPaginated(options: TableOptions): void {
+    this.employeeService.getEmployeesPaginated(options).pipe(first()).subscribe((employees) => {
+      this.isLoadingEmployees = false;
       this.employeePayments = this.calculateTotalPay(employees);
     });
   }
@@ -67,13 +111,7 @@ export class DashboardComponent implements OnInit {
   }
 
   calculateHoursWorked(shiftDuration: number) {
-    return shiftDuration / (1000 * 60 * 60); // Convert milliseconds to hours
-  }
-
-  transformHoursToHoursAndMinutes(hours: number) {
-    const hoursString = Math.floor(hours).toString();
-    const minutesString = Math.floor((hours - Math.floor(hours)) * 60).toString();
-    return `${hoursString}h ${minutesString}m`;
+    return shiftDuration / (1000 * 60 * 60);
   }
 
   calculatePayForShift(
@@ -128,6 +166,29 @@ export class DashboardComponent implements OnInit {
         regularPay,
         overtimePay,
       };
+    });
+  }
+
+  setSelectedEmployees(selectedEmployees: EmployeePayment[]): void {
+    this.selectedEmployees = selectedEmployees;
+  }
+
+  getEmployeeAndShifts(): EmployeePayment[] {
+    return this.selectedEmployees.map((employee) => {
+      const shifts = this.shifts.filter((shift) => shift.employeeId === employee.id);
+      return { ...employee, shifts };
+    });
+  }
+
+  openBulkUpdateDialog(): void {
+    this.dialog.open(BulkEditEmployeesComponent, {
+      data: {
+        employees: this.getEmployeeAndShifts(),
+      },
+      disableClose: true,
+      width: "100%",
+      maxWidth: "1000px",
+      injector: this.injector,
     });
   }
 }

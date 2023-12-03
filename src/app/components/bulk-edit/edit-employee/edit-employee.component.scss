@@ -1,0 +1,35 @@
+.employee {
+  &--name {
+    font-size: 20px;
+    font-weight: 500;
+    color: black;
+    margin-bottom: 0;
+    line-height: 1;
+  }
+  &--id {
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .input-field {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 400px;
+  }
+  input {
+    &::placeholder {
+      font-size: 12px;
+      color: darkgray;
+    }
+  }
+
+  .rate-field{
+    margin: 0px 35px;
+  }
+}
+
+mat-label {
+  font-size: 12px;
+  color: black;
+  width: fit-content;
+}

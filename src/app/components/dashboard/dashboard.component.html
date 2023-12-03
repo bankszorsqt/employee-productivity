@@ -1,19 +1,36 @@
-<div class="flex-col flex " >
-  <img class="mt-40 mb-40"
-    width="152" priority="true"
+<div class="flex-col flex">
+  <img
+    alt="logo"
+    class="mt-40 mb-40"
+    width="152"
     height="32"
     ngSrc="https://assets-global.website-files.com/620e4b3d823b714310fa6d5d/62fa18b88ff443465a9796cf_insightful-logo-primary%20(1).svg"
+    priority="true"
   />
   <app-stats
-    [totalEmployees]="totalEmployees"
+    [isLoading]="isLoadingStats"
     [totalClockedInTime]="totalClockedInTime"
+    [totalEmployees]="totalEmployees"
     [totalOvertimePaidAmount]="overtimePaidAmount"
     [totalRegularPaidAmount]="paidAmount"
   ></app-stats>
+
   <app-employees-list
-    [totalSize]="totalEmployees"
     (pageIndexChange)="getEmployeesPaginated($event)"
-    [loading]="loadingEmployees"
+    (selectEmployee)="setSelectedEmployees($event)"
     [employeePayments]="employeePayments"
-  ></app-employees-list>
+    [isLoading]="isLoadingEmployees"
+    [totalSize]="totalEmployees"
+  >
+    <div
+      [matTooltipPosition]="'above'"
+      [matTooltip]="!selectedEmployees.length ? 'Select employees to edit' : ''"
+      class="mt-40 mb-20 align-self-end"
+    >
+      <button [disabled]="selectedEmployees.length === 0" (click)="openBulkUpdateDialog()" class="w-fit-content" color="primary" extended mat-raised-button>
+        <mat-icon>edit</mat-icon>
+        ({{ selectedEmployees.length }}) Bulk Edit
+      </button>
+    </div>
+  </app-employees-list>
 </div>

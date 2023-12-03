@@ -1,0 +1,14 @@
+<mat-dialog-content class="p-40 bg-white">
+  @for (employee of data.employees; track employee.id; let index = $index; let last = $last) {
+    <app-edit-employee (employeesEdited)="setModifiedEmployees($event)" [index]="index + 1" [employee]="employee"></app-edit-employee>
+    <app-edit-shift (shiftsEdited)="setModifiedShifts($event)" [employee]="employee"></app-edit-shift>
+    <mat-divider *ngIf="!last" class="mb-40"></mat-divider>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions class="flex justify-between px-40-py-20">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button mat-raised-button color="primary" (click)="saveEmployeesAndTheirShifts()" [mat-dialog-close]="true" cdkFocusInitial>
+    Save
+  </button>
+</mat-dialog-actions>

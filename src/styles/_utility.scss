@@ -1,80 +1,132 @@
-.flex {
-  display: flex;
-}
+body {
+  .flex {
+    display: flex;
+  }
 
-.flex-col {
-  flex-direction: column;
-}
+  .flex-col {
+    flex-direction: column;
+  }
 
-.justify-center {
-  justify-content: center;
-}
+  .justify-center {
+    justify-content: center;
+  }
 
-.justify-between {
-  justify-content: space-between;
-}
+  .justify-between {
+    justify-content: space-between;
+  }
 
-.justify-self {
-  justify-self: center;
-}
+  .justify-self {
+    justify-self: center;
+  }
 
-.align-items {
-  align-items: center;
-}
+  .items-center {
+    align-items: center;
+  }
 
-.w-full {
-  width: 100%;
-}
+  .w-full {
+    width: 100%;
+  }
 
-.p-20 {
-  padding: 10px;
-}
+  .p-20 {
+    padding: 10px;
+  }
 
-.m-20 {
-  margin: 20px;
-}
+  .p-40 {
+    padding: 40px !important;
+  }
 
-.max-w-1700 {
-  max-width: 1700px;
-}
+  .px-40-py-20 {
+    padding: 20px 40px !important;
+  }
 
-.mx-auto {
-  margin-left: auto;
-  margin-right: auto;
-}
+  .m-20 {
+    margin: 20px;
+  }
 
-.flex-grow {
-  flex-grow: 1;
-}
+  .max-w-1700 {
+    max-width: 1700px;
+  }
 
-.mt-20 {
-  margin-top: 20px;
-}
+  .relative {
+    position: relative;
+  }
 
-.mb-20 {
-  margin-bottom: 20px;
-}
+  .mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+  }
 
-.mb-40 {
-  margin-bottom: 40px;
-}
+  .px-40 {
+    padding: 0 40px;
+  }
 
-.mt-40 {
-  margin-top: 40px;
-}
+  .flex-grow {
+    flex-grow: 1;
+  }
 
-.mt-80 {
-  margin-top: 80px;
-}
+  .mt-20 {
+    margin-top: 20px;
+  }
 
-.mt-120 {
-  margin-top: 120px;
-}
+  .mb-20 {
+    margin-bottom: 20px;
+  }
 
-.w-fit-content {
-  width: fit-content;
-}
+  .mb-40 {
+    margin-bottom: 40px;
+  }
 
-.align-self-end {
-  align-self: flex-end;
+  .mb-80 {
+    margin-bottom: 80px;
+  }
+
+  .mb-46 {
+    margin-bottom: 46px;
+  }
+
+  .mt-40 {
+    margin-top: 40px;
+  }
+
+  .mt-80 {
+    margin-top: 80px;
+  }
+
+  .mt-120 {
+    margin-top: 120px;
+  }
+
+  .w-fit-content {
+    width: fit-content;
+  }
+
+  .align-self-end {
+    align-self: flex-end;
+  }
+
+  .font-bold {
+    font-weight: bold;
+  }
+  .font-medium {
+    font-weight: 500;
+  }
+
+  .bg-white {
+    background: #fff !important;
+  }
+
+  .fs-16 {
+    font-size: 16px;
+  }
+
+  .text-black {
+    color: #000;
+  }
+
+  .absolute-center {
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    transform: translate(-50%, -50%);
+  }
 }
